@@ -39,6 +39,28 @@ exec(char *path, char **argv)
   }
   ilock(ip);
 
+   // Check for #! at the beginning
+  // Shell scripts look like this at the start:
+  // #!/sh argument (argument not implemented)
+  char shebang[2];
+  readi(ip, 0, (uint64)&shebang, 0, sizeof(shebang));
+  if (shebang[0] == '#' && shebang[1] == '!') {
+    char interpreter[MAXPATH];
+    int read_sz = readi(
+      ip, 0, (uint64)&interpreter, sizeof(shebang), sizeof(interpreter));
+    for (int i = 0; i < MAXPATH && i < read_sz; ++i) {
+      if (interpreter[i] == '\n' || interpreter[i] == ' ') {
+        interpreter[i] = '\0';
+        break;
+      }
+    }
+
+    char *new_argv[] = { interpreter, argv[0], 0 };
+    iunlockput(ip);
+    end_op();
+    return exec(interpreter, new_argv);
+  }
+
   // Check ELF header
   if(readi(ip, 0, (uint64)&elf, 0, sizeof(elf)) != sizeof(elf))
     goto bad;

@@ -50,8 +50,8 @@ char * usageString = "Command			Description\n"
 /**
  * Checks if the string can be converted to a number
  *
- * @param char *str is a string
- * @returns a boolean value representing wether a string is an integer
+ * @param str The string to check if it can be converted to a number
+ * @returns a boolean value representing whether a string is an integer or not
  */
 bool isInt(char *str)
 {
@@ -87,7 +87,7 @@ int openFile(char *file, struct stat *fileInfo)
 	// File Exist
 	else if (fileInfo != NULL)
 	{
-		// Populate the Fill Info in the struct
+		// Populate the File Info in the struct
 		fstat(fd, fileInfo);
 	}
 
@@ -123,6 +123,7 @@ int fileFlags(char *flag, char *file)
 		return 2;
 	} 
 
+	// Open File and Store its Metadata in a struct
 	struct stat fileInfo;
 	int fd = openFile(file, &fileInfo);
 
@@ -208,20 +209,21 @@ int stringOperators(char *string1, char *string2, char *operator)
  */
 int numberOperators(char *num1, char *num2, char *flag)
 {
-	// Error Handling
+	// Error Handling: Checking if the First String can be Converted to a Number
 	if (!isInt(num1))
  	{
  		printf("Not a number: %s \n\n%s \n", num1, usageString);
  		return 2;
  	} 
 
- 	// Error Handling
+ 	// Error Handling: Checking if the Second String can be Converted to a Number
  	if (!isInt(num2))
  	{
  		printf("Not a number: %s \n\n%s \n", num2, usageString);
  		return 2;
  	} 
 
+	// Convert the Strings to Numbers
  	int firstNum = atoi(num1);
  	int secondNum = atoi(num2);
 
@@ -252,7 +254,7 @@ int main(int argc, char** argv)
 {
 	int result = 1;
 	
-	// Error Handling
+	// Error Handling: Checking if Any Arguments were Provided
 	if (argc < 2)
 	{	
 		printf("No arguments provided. \n\n%s \n", usageString);
@@ -300,6 +302,7 @@ int main(int argc, char** argv)
 	 	}
 	 	else
 	 	{
+	 		// Open Files and Store their Metadata in their Respected struct
 			struct stat fileInfo;
 			struct stat fileInfo2;
 			int fd = openFile(argv[1], &fileInfo);

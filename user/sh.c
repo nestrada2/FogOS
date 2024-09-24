@@ -132,18 +132,19 @@ runcmd(struct cmd *cmd)
 }
 
 int
-getcmd(char *buf, int nbuf)
+getcmd(char *buf, int nbuf, int fd)
 {
-  write(2, "$ ", 2);
+  if (fd == 0)
+      write(2, "$ ", 2); // only print prompt if interactive (no script)
   memset(buf, 0, nbuf);
-  gets(buf, nbuf);
+  fgets(fd, buf, nbuf);
   if(buf[0] == 0) // EOF
     return -1;
   return 0;
 }
 
 int
-main(void)
+main(int argc, char *argv[])
 {
   static char buf[100];
   int fd;
@@ -156,8 +157,16 @@ main(void)
     }
   }
 
+   fd = 0;
+  if (argc > 1) {
+    fd = open(argv[1], O_RDONLY);
+  }
+
   // Read and run input commands.
-  while(getcmd(buf, sizeof(buf)) >= 0){
+  while(getcmd(buf, sizeof(buf), fd) >= 0){
+  	if (buf[0] == '#') {
+  		continue;
+  	}
     if(buf[0] == 'c' && buf[1] == 'd' && buf[2] == ' '){
       // Chdir must be called by the parent, not the child.
       buf[strlen(buf)-1] = 0;  // chop \n
