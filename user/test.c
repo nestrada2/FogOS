@@ -36,7 +36,7 @@
 #include <stddef.h>
 
 
-char * usageString = "Command			Description\n"
+const char *usageString = "Command			Description\n"
 "-d file			True if file exists and is a directory.\n"
 "-e file			True if file exists (regardless of type).\n"
 "-f file			True if file exists and is a regular file.\n"
@@ -99,6 +99,7 @@ int openFile(char *file, struct stat *fileInfo)
  * Implements the file flags conditions
  *
  * @param flag The file flag
+ * @param file The file argument for the unary operator
  * @return int 0 for true, 1 for false and 2 for error
  */
 int fileFlags(char *flag, char *file)
@@ -250,7 +251,7 @@ int numberOperators(char *num1, char *num2, char *flag)
  * @param argv The array of command line arguments
  * @return 0 on success or 1 on error
  */
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	int result = 1;
 	

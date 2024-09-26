@@ -4,7 +4,7 @@
 # * Date: September 23, 2024
 # *
 # * Description:
-# * This script compiles the C program test.c and checks its output
+# * This script runs the command 'test' and checks its output
 # * against the expected result. It supports multiple test cases.
 # *
 # * Usage:
@@ -12,14 +12,15 @@
 # * Run: sh test.sh
 # *
 # * Results:
-# * The expected results should be 0 for true, 1 for false, and 2 for error.
+# * The expected results should be 0 for true, 1 for false, and 2 for error or syntax error.
+# * Note: Everytime there is an error the help text is printing out.
 # *
-# * Note: This script only compiles if you add shell scripting support.
+# * Note: This script only runs if you add shell scripting support.
 # * https://github.com/USF-OS/FogOS/pull/71
 # */
 
 
-#!/bin/bash
+#!/bin/sh
 
 
 #/**
@@ -54,8 +55,8 @@ test -h
 # * Test 1: Check if file is directory (output=1)
 # * Test 2: Check if file exist (output=0)
 # * Test 3: Check if file is a regular file (output=0)
-# * Test 3: Check if valid file flag (output=2)
-# * Test 4: Check if there are enough arguments (output=2)
+# * Test 4: Check if valid file flag (output=2)
+# * Test 5: Check if there are enough arguments (output=2)
 # */
 echo -------------------- Testing File Flags --------------------
 echo ---------- "-d" ----------
@@ -157,6 +158,7 @@ test "hell"
 # * Test 4: Check if num1 is greater than num2 (output=1)
 # * Test 5: Check if valid number operator (output=2)
 # * Test 6: Check if there are enough arguments (output=2)
+# * Test 7: Check if argument is a valid number to compare (output=2)
 # */
 echo -------------------- Testing Number Operators --------------------
 echo ---------- "-lt" ----------
@@ -200,6 +202,13 @@ echo ***** Expected Result *****
 echo Result: 2
 echo ***** Actual Result *****
 test 23
+
+echo ---------- valid number to compare ----------
+echo Input: test 23a5 -lt 45
+echo ***** Expected Result *****
+echo Result: 2
+echo ***** Actual Result *****
+test 23a5 -lt 45
 
 
 #/**
