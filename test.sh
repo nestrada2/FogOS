@@ -54,9 +54,11 @@ test -h
 # *
 # * Test 1: Check if file is directory (output=1)
 # * Test 2: Check if file exist (output=0)
-# * Test 3: Check if file is a regular file (output=0)
-# * Test 4: Check if valid file flag (output=2)
-# * Test 5: Check if there are enough arguments (output=2)
+# * Test 3: Check if non-existing file exist (output=1)
+# * Test 4: Check if empty file exist (output=0)
+# * Test 5: Check if file is a regular file (output=0)
+# * Test 6: Check if valid file flag (output=2)
+# * Test 7: Check if there are enough arguments (output=2)
 # */
 echo -------------------- Testing File Flags --------------------
 echo ---------- "-d" ----------
@@ -72,6 +74,21 @@ echo ***** Expected Result *****
 echo Result: 0
 echo ***** Actual Result *****
 test -e cat
+
+echo ----- "-e for non-existing" -----
+echo Input: test -e dog
+echo ***** Expected Result *****
+echo Result: 1
+echo ***** Actual Result *****
+test -e dog
+
+echo ----- "-e for empty file" -----
+echo > empty.txt
+echo Input: test -e empty.txt
+echo ***** Expected Result *****
+echo Result: 0
+echo ***** Actual Result *****
+test -e empty.txt
 
 echo ---------- "-f" ----------
 echo Input: test -f cat
@@ -103,7 +120,11 @@ test -f
 # * Test 3: Check if two strings are not equal (output=1)
 # * Test 4: Check if two strings are not equal (output=0)
 # * Test 5: Check if valid string operator (output=2)
-# * Test 6: Check if there are enough arguments (output=2)
+# * Test 6: Check strings with spaces are equal (output=0)
+# * Test 7: Check strings with spaces are equal (output=1)
+# * Test 8: Check strings with spaces are not equal (output=0)
+# * Test 9: Check strings with spaces are not equal (output=1)
+# * Test 10: Check if there are enough arguments (output=2)
 # */
 echo -------------------- Testing String Operators --------------------
 echo ---------- "=" ----------
@@ -141,6 +162,41 @@ echo Result: 2
 echo ***** Actual Result *****
 test "hello" += "hello"
 
+echo ---------- strings with spaces: "=" ----------
+echo Input: test "hi hello" = "hi hello"
+echo ***** Expected Result *****
+echo Result: 0
+echo ***** Actual Result *****
+test "hi hello" = "hi hello"
+
+echo ---------- strings with spaces "=" ----------
+echo Input: test "hi hello" = "hi hell"
+echo ***** Expected Result *****
+echo Result: 1
+echo ***** Actual Result *****
+test "hi hello" = "hi hell"
+
+echo ---------- strings with spaces "!=" ----------
+echo Input: test "hi hello" != "hi hell"
+echo ***** Expected Result *****
+echo Result: 0
+echo ***** Actual Result *****
+test "hi hello" != "hi hell"
+
+echo ---------- strings with spaces "!=" ----------
+echo Input: test "hi hello" != "hi hello"
+echo ***** Expected Result *****
+echo Result: 1
+echo ***** Actual Result *****
+test "hi hello" != "hi hello"
+
+echo ---------- no closing quote ----------
+echo Input: test "hi hi" != "hi hi
+echo ***** Expected Result *****
+echo Result: 2
+echo ***** Actual Result *****
+test "hi hi" != "hi hi
+
 echo ---------- not enough arguments ----------
 echo Input: test "hell"
 echo ***** Expected Result *****
@@ -158,7 +214,8 @@ test "hell"
 # * Test 4: Check if num1 is greater than num2 (output=1)
 # * Test 5: Check if valid number operator (output=2)
 # * Test 6: Check if there are enough arguments (output=2)
-# * Test 7: Check if argument is a valid number to compare (output=2)
+# * Test 7: Check if argument is a valid number to compare: num1 (output=2)
+# * Test 8: Check if argument is a valid number to compare: num2 (output=2)
 # */
 echo -------------------- Testing Number Operators --------------------
 echo ---------- "-lt" ----------
@@ -209,6 +266,13 @@ echo ***** Expected Result *****
 echo Result: 2
 echo ***** Actual Result *****
 test 23a5 -lt 45
+
+echo ---------- valid number to compare ----------
+echo Input: test 23 -lt 45ed7
+echo ***** Expected Result *****
+echo Result: 2
+echo ***** Actual Result *****
+test 23 -lt 45ed7
 
 
 #/**

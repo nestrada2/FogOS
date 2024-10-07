@@ -91,6 +91,7 @@ int openFile(char *file, struct stat *fileInfo)
 		fstat(fd, fileInfo);
 	}
 
+	close(fd);
 	return fd;
 }
 
@@ -243,6 +244,78 @@ int numberOperators(char *num1, char *num2, char *flag)
  	}
 }
 
+/**
+ * Parses the arguments because FogOS doesn't respect quotes when creating the argv array
+ * 
+ * For example, when pass in "hi hello", it is treated as two separate arguments.
+ * So, we have to build the string one word at a time.
+ *
+ * @param argc The number of command line arguments
+ * @param argv The array of command line argumetns
+ * @return int The number of parse arguments (the new argc) or -1 for error
+ */
+int parseArgs(int argc, char **argv, char** newArgs)
+{
+	char buf[128]; // String Builder
+	char *ptrBuf; // Should Always Point to the Current End of the String being Built ('buf')
+	int newIndex = 0; // Keeping Track of where we are in the Arguments
+
+	// Loop through the Arguments
+	for (int i = 0; i < argc; i += 1)
+	{
+		//  Argument is a String
+		if (argv[i][0] == '"')
+		{
+			ptrBuf = buf;
+
+			int len = strlen(argv[i]);
+
+			// Keep Adding Words to the String Builder
+			while (argv[i][len - 1] != '"' && i < argc)
+			{
+				// Copy Current Word into the Buffer 
+				strcpy(ptrBuf, argv[i]);
+
+				// Point 'ptrBuf' at the End of the Buffer
+				ptrBuf += len;
+				*ptrBuf = ' '; // Add Space
+
+				// Since we Added a Space, Need to Increment Pointer to be At the End of Buf
+				ptrBuf += 1;
+			
+				// Reset "len" for the Next Word
+				i += 1;
+				len = strlen(argv[i]);
+			}
+
+			// Error Handling: Checking if User is Missing the Closing Quote
+			if (i == argc)
+			{
+				printf("Invalid syntax: missing closing quote\n\n%s \n", usageString);
+				return -1;
+			}
+
+			// Copy Final Word into Buf
+			strcpy(ptrBuf, argv[i]);
+
+			// Setting up NewArgs to be Able to Store Buf with the Null Terminator Character
+			newArgs[newIndex] = (char *)malloc(strlen(buf) + 1);
+
+			// Copying Buf into the New Arguments
+			strcpy(newArgs[newIndex], buf);
+			newIndex += 1;
+		}
+		// Any Arguments without Quotes
+		else
+		{
+			newArgs[newIndex] = argv[i];
+			newIndex += 1;
+		}
+	}
+
+	return newIndex;
+}
+
 
 /**
  * The entry point of the program
@@ -253,6 +326,11 @@ int numberOperators(char *num1, char *num2, char *flag)
  */
 int main(int argc, char **argv)
 {
+	// Corrected Arguments
+	char **newArgs = (char **)malloc(argc *sizeof(char *));
+	int newArgc = 0;
+
+	// Return Value
 	int result = 1;
 	
 	// Error Handling: Checking if Any Arguments were Provided
@@ -267,47 +345,58 @@ int main(int argc, char **argv)
 		printf("Usage: \n\n%s \n", usageString);
 		exit(0);
 	}
-	// File Flags
-	else if (argv[1][0] == '-')
+	// Error Handling: Checking if Enough Arguments were Provided
+	else if (argc < 3)
+	{	
+		printf("Not enough arguments provided. \n\n%s \n", usageString);
+		result = 2;
+	}
+	// Error Handling: Missing Closing Quote
+	else if ((newArgc = parseArgs(argc, argv, newArgs)) < 0)
 	{
-		if (argc < 3)
+		result = 2;
+	}
+	// File Flags
+	else if (newArgs[1][0] == '-')
+	{
+		if (newArgc < 3)
 	 	{
 	 		printf("File expression requires 2 arguments. \n\n%s \n", usageString);
 	 		result = 2;
 	 	} 
 	 	else
 	 	 {
-	 		result = fileFlags(argv[1], argv[2]);
+	 		result = fileFlags(newArgs[1], newArgs[2]);
 	 	}
 	}
 	// String Operators
-	else if (argv[1][0] == '"')
+	else if (strcmp(newArgs[2], "=") == 0 || strcmp(newArgs[2], "!=") == 0)
 	{
-		if (argc < 4)
+		if (newArgc < 4)
 	 	{
 	 		printf("String comparisons requires 3 arguments. \n\n%s \n", usageString);
 	 		result = 2;
 	 	}
 	 	else
 	 	{
-			result = stringOperators( argv[1],  argv[3],  argv[2]);
+			result = stringOperators(newArgs[1],  newArgs[3],  newArgs[2]);
 		}
 	}
 	// File Comparisons
-	else if (strcmp(argv[2], "-ef") == 0) 
+	else if (strcmp(newArgs[2], "-ef") == 0) 
 	{
-		if (argc < 4)
+		if (newArgc < 4)
 	 	{
 	 		printf("File comparisons requires 3 arguments. \n\n%s \n", usageString);
 	 		result = 2;
 	 	}
 	 	else
 	 	{
-	 		// Open Files and Store their Metadata in their Respected struct
+	 		// Open Files and Store their Metadata in their Respective structs
 			struct stat fileInfo;
 			struct stat fileInfo2;
-			int fd = openFile(argv[1], &fileInfo);
-			int fd2 = openFile(argv[3], &fileInfo2);
+			int fd = openFile(newArgs[1], &fileInfo);
+			int fd2 = openFile(newArgs[3], &fileInfo2);
 
 			if (fd < 0 || fd2 < 0)
 			{
@@ -320,17 +409,22 @@ int main(int argc, char **argv)
 		}
 	}
 	// Number Operators
-	 else
+	 else if (strcmp(newArgs[2], "-gt") == 0 || strcmp(newArgs[2], "-lt") == 0)
 	 {
-	 	if (argc < 4)
+	 	if (newArgc < 4)
 	 	{
 	 		printf("Number comparisons requires 3 arguments. \n\n%s \n", usageString);
 	 		result = 2;
 	 	} 
 	 	else
 	 	{
-	 		result = numberOperators(argv[1], argv[3], argv[2]);
+	 		result = numberOperators(newArgs[1], newArgs[3], newArgs[2]);
 	 	}
+	 }
+	 else
+	 {
+	 	printf("Unrecognized operation \n\n%s \n", usageString);
+	 	result = 2;
 	 }
 
 	printf("Result: %d\n", result);
