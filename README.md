@@ -1,4 +1,3 @@
-# FogOS
 <h3 align="center" style="font-size: 2.1em; font-weight: bolder;">FogOS</h3>
 
   <p align="center">
@@ -57,7 +56,7 @@ This project builds on top of the foundational xv6 operating system, a teaching 
 
 <!-- LICENSE -->
 ## 📜 License
-Distributed under the MIT License. See [`LICENSE.txt`](LICENSE.txt) for more information.
+Distributed under the xv6 License. See [`xv6-LICENSE`](xv6-LICENSE) for more information.
 
 <!-- RESOURCES -->
 ## 📚 Resources
