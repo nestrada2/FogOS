@@ -3,7 +3,7 @@
   <p align="center">
     An Operating System Built on Top of Xv6
     <br />
-    <a href="https://github.com/nestrada2/FogOS"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/nestrada2/FogOS/tree/main/docs"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://github.com/nestrada2/FogOS/issues/new?labels=bug&template=bug-report.md">Report Bug</a>
