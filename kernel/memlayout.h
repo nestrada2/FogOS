@@ -25,6 +25,9 @@
 #define VIRTIO0 0x10001000
 #define VIRTIO0_IRQ 1
 
+// Goldfish Real Time Clock
+#define GOLDFISH_RTC 0x101000
+
 // core local interruptor (CLINT), which contains the timer.
 #define CLINT 0x2000000L
 #define CLINT_MTIMECMP(hartid) (CLINT + 0x4000 + 8*(hartid))

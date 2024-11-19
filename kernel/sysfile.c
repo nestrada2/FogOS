@@ -354,7 +354,7 @@ sys_open(void)
     f->major = ip->major;
   } else {
     f->type = FD_INODE;
-    f->off = 0;
+    f->off = (omode & O_APPEND) ? ip->size: 0; // Offset by the size of the file
   }
   f->ip = ip;
   f->readable = !(omode & O_WRONLY);
@@ -402,6 +402,34 @@ sys_mknod(void)
     return -1;
   }
   iunlockput(ip);
+  end_op();
+  return 0;
+}
+
+uint64
+sys_getcwd(void)
+{
+  uint64 ubuf;
+  int sz;
+
+  begin_op();
+  argaddr(0, &ubuf);
+  argint(1, &sz);
+
+  if (sz > PGSIZE) {
+    end_op();
+    return -1;
+  }
+
+  char *buf = kalloc();
+  getcwd(buf, sz);
+
+  if (copyout(myproc()->pagetable, ubuf, buf, sz) < 0) {
+    end_op();
+    return -1;
+  }
+
+  kfree(buf);
   end_op();
   return 0;
 }

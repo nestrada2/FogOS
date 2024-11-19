@@ -89,3 +89,13 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+// returns the current Unix timestamp in nano seconds
+uint64
+sys_gettime(void)
+{
+  volatile uint64 *rtc_dev = (uint64 *) GOLDFISH_RTC;
+
+  // Deference to get Time
+  return *rtc_dev;
+}
