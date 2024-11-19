@@ -20,7 +20,7 @@ This project builds on top of the foundational xv6 operating system, a teaching 
 
 ### **✨ Features**
 - [test: check file types and compare values](https://github.com/USF-OS/FogOS/pull/77)
-- [tosh: command line shell (in development)](https://github.com/nestrada2/FogOS/blob/main/docs/TOSH.md)
+- [tosh: command line shell](https://github.com/nestrada2/FogOS/blob/main/docs/TOSH.md)
 
 ### **🛠️ Tech Stack**
 [![C][C.com]][C-url]
