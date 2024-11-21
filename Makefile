@@ -118,6 +118,7 @@ mkfs/mkfs: mkfs/mkfs.c $K/fs.h $K/param.h
 UPROGS=\
 	$U/_cat\
 	$U/_echo\
+	$U/_fnr\
 	$U/_forktest\
 	$U/_grep\
 	$U/_init\
@@ -129,6 +130,7 @@ UPROGS=\
 	$U/_sh\
 	$U/_stressfs\
 	$U/_test\
+	$U/_tolower\
 	$U/_tosh\
 	$U/_usertests\
 	$U/_grind\
@@ -136,7 +138,7 @@ UPROGS=\
 	$U/_zombie\
 
 fs.img: mkfs/mkfs README.md $(UPROGS)
-	mkfs/mkfs fs.img README.md test.sh $(UPROGS)
+	mkfs/mkfs fs.img README.md input.txt append.txt test.sh tosh_test1.sh tosh_test2.sh tosh_test3.sh tosh_test4.sh $(UPROGS)
 
 -include kernel/*.d user/*.d
 
